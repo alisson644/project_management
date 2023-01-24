@@ -1,8 +1,18 @@
 class TasksController < ApplicationController
   before_action :set_project
+  before_action :set_task, only: %i[edit update destroy]
 
   def create
-    @task = @project.task.create(task_params)
+    @task = @project.tasks.create(task_params)
+    redirect_to @project
+  end
+
+  def destroy
+    if @task.destroy
+      flash[:success] = "Task was deleted"
+    else
+      flash[:error] = "Task was not deleted"
+    end
     redirect_to @project
   end
 
@@ -10,6 +20,10 @@ class TasksController < ApplicationController
 
   def set_project
     @project = Project.find(params[:project_id])
+  end
+
+  def set_task
+    @task = @project.tasks.find(params[:id])
   end
 
   def task_params
